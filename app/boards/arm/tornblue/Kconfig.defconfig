@@ -6,6 +6,9 @@ config ZMK_KEYBOARD_NAME
 config ZMK_SPLIT_BLE_ROLE_CENTRAL
     default y
 
+config ZMK_USB
+	default y
+
 endif
 
 if BOARD_TORNBLUE_RIGHT
@@ -34,9 +37,6 @@ config BT_CTLR
 	default BT
 
 config ZMK_BLE
-	default y
-
-config ZMK_USB
 	default y
 
 config ZMK_BATTERY_VOLTAGE_DIVIDER
