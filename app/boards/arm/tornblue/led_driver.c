@@ -55,7 +55,7 @@ static int led_event_handler(const zmk_event_t *eh) {
     return 0;
 }
 
-static int led_init(const struct device *port) {
+static int led_init(void) {
     led_pin_init(&led1);
     led_pin_init(&led2);
     led_pin_init(&led3);
