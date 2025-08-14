@@ -1,0 +1,40 @@
+/*
+ * Copyright (c) 2023 ZMK Contributors
+ * SPDX-License-Identifier: MIT
+ */
+
+&pinctrl {
+	spi0_default_left: spi0_default_left {
+		group1 {
+			psels = <NRF_PSEL(SPIM_MOSI, 0, 23)>,
+				<NRF_PSEL(SPIM_SCK, 0, 6)>,
+				<NRF_PSEL(SPIM_MISO, 0, 8)>;
+		};
+	};
+
+	spi0_sleep_left: spi0_sleep_left {
+		group1 {
+			psels = <NRF_PSEL(SPIM_MOSI, 0, 23)>,
+				<NRF_PSEL(SPIM_SCK, 0, 6)>,
+				<NRF_PSEL(SPIM_MISO, 0, 8)>;
+			low-power-enable;
+		};
+	};
+
+	spi0_default_right: spi0_default_right {
+		group1 {
+			psels = <NRF_PSEL(SPIM_MOSI, 0, 22)>,
+				<NRF_PSEL(SPIM_SCK, 0, 27)>,
+				<NRF_PSEL(SPIM_MISO, 0, 8)>;
+		};
+	};
+
+	spi0_sleep_right: spi0_sleep_right {
+		group1 {
+			psels = <NRF_PSEL(SPIM_MOSI, 0, 22)>,
+				<NRF_PSEL(SPIM_SCK, 0, 27)>,
+				<NRF_PSEL(SPIM_MISO, 0, 8)>;
+			low-power-enable;
+		};
+	};
+};
