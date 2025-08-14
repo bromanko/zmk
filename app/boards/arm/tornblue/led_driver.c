@@ -1,10 +1,9 @@
-#include <init.h>
-#include <device.h>
-#include <devicetree.h>
-//#include <drivers/led.h>
-#include <drivers/gpio.h>
+#include <zephyr/init.h>
+#include <zephyr/device.h>
+#include <zephyr/devicetree.h>
+#include <zephyr/drivers/gpio.h>
 
-#include <logging/log.h>
+#include <zephyr/logging/log.h>
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 #include <zmk/keymap.h>
@@ -17,53 +16,49 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #define LED3_NODE DT_ALIAS(led3)
 
 #if DT_NODE_HAS_STATUS(LED1_NODE, okay)
-#define LED1    DT_GPIO_LABEL(LED1_NODE, gpios)
-#define PIN1    DT_GPIO_PIN(LED1_NODE, gpios)
-#define FLAGS1  DT_GPIO_FLAGS(LED1_NODE, gpios)
+static const struct gpio_dt_spec led1 = GPIO_DT_SPEC_GET(LED1_NODE, gpios);
 #else
 #error "Unsupported board: led1 devicetree alias is not defined"
 #endif
 
 #if DT_NODE_HAS_STATUS(LED2_NODE, okay)
-#define LED2    DT_GPIO_LABEL(LED2_NODE, gpios)
-#define PIN2    DT_GPIO_PIN(LED2_NODE, gpios)
-#define FLAGS2  DT_GPIO_FLAGS(LED2_NODE, gpios)
+static const struct gpio_dt_spec led2 = GPIO_DT_SPEC_GET(LED2_NODE, gpios);
 #else
 #error "Unsupported board: led2 devicetree alias is not defined"
 #endif
 
 #if DT_NODE_HAS_STATUS(LED3_NODE, okay)
-#define LED3    DT_GPIO_LABEL(LED3_NODE, gpios)
-#define PIN3    DT_GPIO_PIN(LED3_NODE, gpios)
-#define FLAGS3  DT_GPIO_FLAGS(LED3_NODE, gpios)
+static const struct gpio_dt_spec led3 = GPIO_DT_SPEC_GET(LED3_NODE, gpios);
 #else
 #error "Unsupported board: led3 devicetree alias is not defined"
 #endif
 
-static void led_pin_init(const char *name, gpio_pin_t pin, gpio_dt_flags_t dt_flags) {
-    const struct device *dev = device_get_binding(name);
-    gpio_pin_configure(dev, pin, GPIO_OUTPUT_ACTIVE | dt_flags);
-    gpio_pin_set(dev, pin, 0);
+static void led_pin_init(const struct gpio_dt_spec *gpio) {
+    if (!device_is_ready(gpio->port)) {
+        LOG_ERR("LED GPIO device not ready");
+        return;
+    }
+    gpio_pin_configure_dt(gpio, GPIO_OUTPUT_ACTIVE | gpio->dt_flags);
+    gpio_pin_set_dt(gpio, 0);
 }
 
-static void led_pin_set(const char *name, gpio_pin_t pin, int value) {
-    const struct device *dev = device_get_binding(name);
-    gpio_pin_set(dev, pin, value);
+static void led_pin_set(const struct gpio_dt_spec *gpio, int value) {
+    gpio_pin_set_dt(gpio, value);
 }
 
 static int led_event_handler(const zmk_event_t *eh) {
     const uint8_t layer_active = zmk_keymap_highest_layer_active();
-    led_pin_set(LED3, PIN3, layer_active == 3 /* Nav */);
-    led_pin_set(LED2, PIN2, layer_active == 7 /* Symbol */);
-    led_pin_set(LED1, PIN1, layer_active == 6 /* Num */);
+    led_pin_set(&led3, layer_active == 3 /* Nav */);
+    led_pin_set(&led2, layer_active == 7 /* Symbol */);
+    led_pin_set(&led1, layer_active == 6 /* Num */);
 
     return 0;
 }
 
 static int led_init(const struct device *port) {
-    led_pin_init(LED1, PIN1, FLAGS1);
-    led_pin_init(LED2, PIN2, FLAGS2);
-    led_pin_init(LED3, PIN3, FLAGS3);
+    led_pin_init(&led1);
+    led_pin_init(&led2);
+    led_pin_init(&led3);
 
     return 0;
 }
