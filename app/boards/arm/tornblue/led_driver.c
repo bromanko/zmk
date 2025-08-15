@@ -48,9 +48,9 @@ static void led_pin_set(const struct gpio_dt_spec *gpio, int value) {
 
 static int led_event_handler(const zmk_event_t *eh) {
     const uint8_t layer_active = zmk_keymap_highest_layer_active();
-    led_pin_set(&led3, layer_active == 3 /* Nav */);
-    led_pin_set(&led2, layer_active == 7 /* Symbol */);
-    led_pin_set(&led1, layer_active == 6 /* Num */);
+    led_pin_set(&led3, layer_active == 4 /* Nav */);
+    led_pin_set(&led2, layer_active == 8 /* Symbol */);
+    led_pin_set(&led1, layer_active == 7 /* Num */);
 
     return 0;
 }
